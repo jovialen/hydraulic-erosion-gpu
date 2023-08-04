@@ -1,3 +1,6 @@
+mod terrain;
+
+use crate::terrain::Terrain;
 use bevy::pbr::wireframe::{WireframeConfig, WireframePlugin};
 use bevy::pbr::DirectionalLightBundle;
 use bevy::prelude::*;
@@ -40,17 +43,19 @@ fn setup_lights(mut commands: Commands) {
 fn setup_terrain(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
+    mut images: ResMut<Assets<Image>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
+    let terrain = Terrain {
+        size: 128,
+        scale: 10.0,
+    };
+
+    let heightmap = images.add(terrain.into());
+
     commands.spawn(PbrBundle {
-        mesh: meshes.add(
-            shape::Plane {
-                size: 10.0,
-                subdivisions: 100,
-            }
-            .into(),
-        ),
-        material: materials.add(Color::GREEN.into()),
+        mesh: meshes.add(terrain.into()),
+        material: materials.add(heightmap.into()),
         transform: Transform::from_xyz(0.0, 0.0, 0.0),
         ..default()
     });
