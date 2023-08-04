@@ -43,7 +43,13 @@ fn setup_terrain(
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
     commands.spawn(PbrBundle {
-        mesh: meshes.add(shape::Plane::from_size(10.0).into()),
+        mesh: meshes.add(
+            shape::Plane {
+                size: 10.0,
+                subdivisions: 100,
+            }
+            .into(),
+        ),
         material: materials.add(Color::GREEN.into()),
         transform: Transform::from_xyz(0.0, 0.0, 0.0),
         ..default()
