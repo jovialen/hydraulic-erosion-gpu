@@ -80,12 +80,6 @@ fn vertex(vertex: Vertex) -> MeshVertexOutput {
     var down = textureLoad(terrain_texture, coords - dy, 0).r;
     var right = textureLoad(terrain_texture, coords + dx, 0).r;
     var left = textureLoad(terrain_texture, coords - dx, 0).r;
-    
-    // var normal = normalize(vec3<f32>(
-    //     height_at(terrain_texture, coords - dx) - height_at(terrain_texture, coords + dx),
-    //     0.1,
-    //     height_at(terrain_texture, coords - dy) - height_at(terrain_texture, coords + dy),
-    // ));
 
     var normal = normalize(vec3<f32>(
         left - right,

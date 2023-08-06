@@ -2,8 +2,6 @@ mod terrain;
 
 use crate::terrain::{TerrainConfig, TerrainMaterial};
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
-use bevy::pbr::wireframe::{WireframeConfig, WireframePlugin};
-use bevy::pbr::DirectionalLightBundle;
 use bevy::prelude::*;
 use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
 
@@ -11,12 +9,9 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(PanOrbitCameraPlugin)
-        .add_plugins(WireframePlugin)
         .add_plugins(MaterialPlugin::<TerrainMaterial>::default())
         .add_plugins((LogDiagnosticsPlugin::default(), FrameTimeDiagnosticsPlugin))
-        .insert_resource(WireframeConfig { global: false })
         .add_systems(Startup, (setup_camera, setup_terrain, setup_lights))
-        .add_systems(Update, edit_settings)
         .run();
 }
 
@@ -69,10 +64,4 @@ fn setup_terrain(
         transform: Transform::from_xyz(0.0, 0.0, 0.0),
         ..default()
     });
-}
-
-fn edit_settings(mut wf_config: ResMut<WireframeConfig>, keys: Res<Input<KeyCode>>) {
-    if keys.just_pressed(KeyCode::C) {
-        wf_config.global = !wf_config.global;
-    }
 }
