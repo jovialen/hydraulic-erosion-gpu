@@ -1,3 +1,4 @@
+use super::Terrain;
 use bevy::prelude::*;
 use bevy::reflect::{TypePath, TypeUuid};
 use bevy::render::render_resource::{
@@ -5,22 +6,6 @@ use bevy::render::render_resource::{
 };
 use noise::utils::{NoiseMapBuilder, PlaneMapBuilder};
 use noise::{Fbm, Perlin};
-
-#[derive(Clone, Copy, PartialEq, Debug)]
-pub struct Terrain {
-    pub size: u32,
-    pub scale: f32,
-}
-
-impl From<Terrain> for Mesh {
-    fn from(terrain: Terrain) -> Self {
-        shape::Plane {
-            size: terrain.scale,
-            subdivisions: terrain.size,
-        }
-        .into()
-    }
-}
 
 impl From<Terrain> for Image {
     fn from(terrain: Terrain) -> Self {
