@@ -1,4 +1,3 @@
-use super::Terrain;
 use bevy::asset::Handle;
 use bevy::math::Vec4;
 use bevy::pbr::{
@@ -10,37 +9,6 @@ use bevy::render::{
     color::Color, mesh::MeshVertexBufferLayout, render_asset::RenderAssets, render_resource::*,
     texture::Image,
 };
-use noise::utils::{NoiseMapBuilder, PlaneMapBuilder};
-use noise::{Fbm, Perlin};
-
-impl From<Terrain> for Image {
-    fn from(terrain: Terrain) -> Self {
-        let usize_size = terrain.size as usize;
-        let f64_scale = terrain.scale as f64;
-
-        let fbm: Fbm<Perlin> = Fbm::default();
-
-        let data = PlaneMapBuilder::<Fbm<Perlin>, 2>::new(fbm)
-            .set_size(usize_size, usize_size)
-            .set_x_bounds(0.0, f64_scale)
-            .set_y_bounds(0.0, f64_scale)
-            .build()
-            .iter()
-            .map(|v| (v * 255.0).floor() as u8)
-            .collect();
-
-        Image::new(
-            Extent3d {
-                width: terrain.size,
-                height: terrain.size,
-                depth_or_array_layers: 1,
-            },
-            TextureDimension::D2,
-            data,
-            TextureFormat::R8Unorm,
-        )
-    }
-}
 
 #[derive(AsBindGroup, Debug, Clone, TypePath, TypeUuid)]
 #[uuid = "0e1d21c6-dd0b-4780-a774-9d6153786f61"]

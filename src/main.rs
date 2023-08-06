@@ -1,6 +1,6 @@
 mod terrain;
 
-use crate::terrain::{Terrain, TerrainMaterial};
+use crate::terrain::{TerrainConfig, TerrainMaterial};
 use bevy::pbr::wireframe::{WireframeConfig, WireframePlugin};
 use bevy::pbr::DirectionalLightBundle;
 use bevy::prelude::*;
@@ -47,17 +47,20 @@ fn setup_terrain(
     mut images: ResMut<Assets<Image>>,
     mut materials: ResMut<Assets<TerrainMaterial>>,
 ) {
-    let terrain = Terrain {
+    let mut config = TerrainConfig {
         size: 256,
         scale: 10.0,
+        ..default()
     };
 
-    let heightmap = images.add(terrain.into());
+    config.noise.frequency = 0.3;
+
+    let heightmap = images.add(config.generate_heightmap());
     let mut material = TerrainMaterial::from(heightmap.clone());
     material.base_color_texture = Some(heightmap.clone());
 
     commands.spawn(MaterialMeshBundle {
-        mesh: meshes.add(terrain.into()),
+        mesh: meshes.add(config.generate_mesh()),
         material: materials.add(material),
         transform: Transform::from_xyz(0.0, 0.0, 0.0),
         ..default()
