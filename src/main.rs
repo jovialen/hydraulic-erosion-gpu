@@ -53,10 +53,12 @@ fn setup_terrain(
     };
 
     let heightmap = images.add(terrain.into());
+    let mut material = TerrainMaterial::from(heightmap.clone());
+    material.base_color_texture = Some(heightmap.clone());
 
     commands.spawn(MaterialMeshBundle {
         mesh: meshes.add(terrain.into()),
-        material: materials.add(heightmap.into()),
+        material: materials.add(material),
         transform: Transform::from_xyz(0.0, 0.0, 0.0),
         ..default()
     });

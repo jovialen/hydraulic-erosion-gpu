@@ -1842,6 +1842,7 @@ version = "0.1.0"
 dependencies = [
  "bevy",
  "bevy_panorbit_camera",
+ "bitflags 2.3.3",
  "noise",
 ]
 

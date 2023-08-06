@@ -2,9 +2,9 @@
 #import bevy_pbr::mesh_vertex_output 	MeshVertexOutput
 #import bevy_pbr::mesh_functions		as mesh_functions
 
-@group(1) @binding(0)
+@group(1) @binding(13)
 var terrain_texture: texture_2d<f32>;
-@group(1) @binding(1)
+@group(1) @binding(14)
 var terrain_sampler: sampler;
 
 struct Vertex {
