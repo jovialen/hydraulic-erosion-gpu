@@ -5,7 +5,7 @@ use bevy::pbr::{
     AlphaMode, Material, MaterialPipeline, MaterialPipelineKey, ParallaxMappingMethod,
     PBR_PREPASS_SHADER_HANDLE, PBR_SHADER_HANDLE,
 };
-use bevy::reflect::{std_traits::ReflectDefault, Reflect, TypePath, TypeUuid};
+use bevy::reflect::{TypePath, TypeUuid};
 use bevy::render::{
     color::Color, mesh::MeshVertexBufferLayout, render_asset::RenderAssets, render_resource::*,
     texture::Image,
