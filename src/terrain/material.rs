@@ -274,6 +274,7 @@ impl Material for TerrainMaterial {
 
     fn fragment_shader() -> ShaderRef {
         PBR_SHADER_HANDLE.typed().into()
+        // "shaders/terrain_material.wgsl".into()
     }
 
     #[inline]

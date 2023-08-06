@@ -26,20 +26,23 @@ struct Vertex {
 #endif
 };
 
+fn uv_to_coords(t: texture_2d<f32>, uv: vec2<f32>) -> vec2<u32> {
+	var size = textureDimensions(t, 0);
+	return vec2<u32>(vec2<f32>(size) * uv);
+}
+
+fn height_at(t: texture_2d<f32>, coords: vec2<u32>) -> f32 {
+    return textureLoad(t, coords, 0).r;
+}
+
 @vertex
 fn vertex(vertex: Vertex) -> MeshVertexOutput {
     var out: MeshVertexOutput;
 
     var model = mesh.model;
 
-#ifdef VERTEX_NORMALS
-    out.world_normal = mesh_functions::mesh_normal_local_to_world(vertex.normal);
-#endif
-
 #ifdef VERTEX_POSITIONS
-	var size = textureDimensions(terrain_texture, 0);
-	var coords = vec2<u32>(vec2<f32>(size) * vertex.uv);
-	var height = textureLoad(terrain_texture, coords, 0).r;
+    var height = height_at(terrain_texture, uv_to_coords(terrain_texture, vertex.uv));
 	
     out.world_position = mesh_functions::mesh_position_local_to_world(
 		model,
@@ -67,5 +70,36 @@ fn vertex(vertex: Vertex) -> MeshVertexOutput {
     out.instance_index = vertex.instance_index;
 #endif
 
+#ifdef VERTEX_NORMALS
+    var coords = uv_to_coords(terrain_texture, vertex.uv);
+
+    var dx = vec2<u32>(1u, 0u);
+    var dy = vec2<u32>(0u, 1u);
+    
+    var up = textureLoad(terrain_texture, coords + dy, 0).r;
+    var down = textureLoad(terrain_texture, coords - dy, 0).r;
+    var right = textureLoad(terrain_texture, coords + dx, 0).r;
+    var left = textureLoad(terrain_texture, coords - dx, 0).r;
+    
+    // var normal = normalize(vec3<f32>(
+    //     height_at(terrain_texture, coords - dx) - height_at(terrain_texture, coords + dx),
+    //     0.1,
+    //     height_at(terrain_texture, coords - dy) - height_at(terrain_texture, coords + dy),
+    // ));
+
+    var normal = normalize(vec3<f32>(
+        left - right,
+        0.2,
+        down - up,
+    ));
+    
+    out.world_normal = mesh_functions::mesh_normal_local_to_world(normal);
+#endif
+
     return out;
+}
+
+@fragment
+fn fragment(mesh: MeshVertexOutput) -> @location(0) vec4<f32> {
+    return vec4<f32>(mesh.world_normal, 1.0);
 }

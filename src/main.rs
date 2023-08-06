@@ -1,6 +1,7 @@
 mod terrain;
 
 use crate::terrain::{TerrainConfig, TerrainMaterial};
+use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 use bevy::pbr::wireframe::{WireframeConfig, WireframePlugin};
 use bevy::pbr::DirectionalLightBundle;
 use bevy::prelude::*;
@@ -12,6 +13,7 @@ fn main() {
         .add_plugins(PanOrbitCameraPlugin)
         .add_plugins(WireframePlugin)
         .add_plugins(MaterialPlugin::<TerrainMaterial>::default())
+        .add_plugins((LogDiagnosticsPlugin::default(), FrameTimeDiagnosticsPlugin))
         .insert_resource(WireframeConfig { global: false })
         .add_systems(Startup, (setup_camera, setup_terrain, setup_lights))
         .add_systems(Update, edit_settings)
@@ -32,11 +34,11 @@ fn setup_lights(mut commands: Commands) {
     commands.spawn(DirectionalLightBundle {
         directional_light: DirectionalLight {
             color: Color::WHITE,
-            illuminance: 25_000.0,
+            illuminance: 10_000.0,
             shadows_enabled: false,
             ..default()
         },
-        transform: Transform::from_xyz(0.0, 1000.0, 0.01).looking_at(Vec3::ZERO, Vec3::Y),
+        transform: Transform::from_xyz(500.0, 1000.0, 500.0).looking_at(Vec3::ZERO, Vec3::Y),
         ..default()
     });
 }
@@ -48,7 +50,7 @@ fn setup_terrain(
     mut materials: ResMut<Assets<TerrainMaterial>>,
 ) {
     let mut config = TerrainConfig {
-        size: 256,
+        size: 512,
         scale: 10.0,
         ..default()
     };
@@ -58,6 +60,8 @@ fn setup_terrain(
     let heightmap = images.add(config.generate_heightmap());
     let mut material = TerrainMaterial::from(heightmap.clone());
     material.base_color_texture = Some(heightmap.clone());
+    material.reflectance = 0.1;
+    material.perceptual_roughness = 0.9;
 
     commands.spawn(MaterialMeshBundle {
         mesh: meshes.add(config.generate_mesh()),
