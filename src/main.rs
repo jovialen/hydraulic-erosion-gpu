@@ -1,6 +1,6 @@
 mod terrain;
 
-use crate::terrain::Terrain;
+use crate::terrain::{Terrain, TerrainMaterial};
 use bevy::pbr::wireframe::{WireframeConfig, WireframePlugin};
 use bevy::pbr::DirectionalLightBundle;
 use bevy::prelude::*;
@@ -11,6 +11,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugins(PanOrbitCameraPlugin)
         .add_plugins(WireframePlugin)
+        .add_plugins(MaterialPlugin::<TerrainMaterial>::default())
         .insert_resource(WireframeConfig { global: false })
         .add_systems(Startup, (setup_camera, setup_terrain, setup_lights))
         .add_systems(Update, edit_settings)
@@ -44,7 +45,7 @@ fn setup_terrain(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut images: ResMut<Assets<Image>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
+    mut materials: ResMut<Assets<TerrainMaterial>>,
 ) {
     let terrain = Terrain {
         size: 256,
@@ -53,7 +54,7 @@ fn setup_terrain(
 
     let heightmap = images.add(terrain.into());
 
-    commands.spawn(PbrBundle {
+    commands.spawn(MaterialMeshBundle {
         mesh: meshes.add(terrain.into()),
         material: materials.add(heightmap.into()),
         transform: Transform::from_xyz(0.0, 0.0, 0.0),

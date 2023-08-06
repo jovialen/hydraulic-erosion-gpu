@@ -64,3 +64,9 @@ impl Material for TerrainMaterial {
         "shaders/terrain_material.wgsl".into()
     }
 }
+
+impl From<Handle<Image>> for TerrainMaterial {
+    fn from(heightmap: Handle<Image>) -> Self {
+        Self { heightmap }
+    }
+}
