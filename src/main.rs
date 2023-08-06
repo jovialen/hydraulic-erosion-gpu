@@ -47,7 +47,7 @@ fn setup_terrain(
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
     let terrain = Terrain {
-        size: 128,
+        size: 256,
         scale: 10.0,
     };
 
