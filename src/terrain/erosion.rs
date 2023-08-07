@@ -9,6 +9,7 @@ use std::borrow::Cow;
 
 const EROSION_NODE: &str = "erosion_node";
 const EROSION_COMPUTE_SHADER: &str = "shaders/erosion.wgsl";
+const WORKGROUP_SIZE: u32 = 1024;
 
 pub struct ErosionPlugin;
 
@@ -163,7 +164,8 @@ impl bevy::render::render_graph::Node for ErosionNode {
             pass.set_pipeline(erosion_pipeline);
 
             info!("Dispatching compute erosion shader");
-            pass.dispatch_workgroups(512 / 8, 512 / 8, 1);
+            pass.dispatch_workgroups(50000 / WORKGROUP_SIZE, 1, 1);
+            // pass.dispatch_workgroups(10, 10, 1);
         }
 
         Ok(())
