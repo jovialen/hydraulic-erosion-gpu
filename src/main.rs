@@ -1,6 +1,6 @@
 mod terrain;
 
-use crate::terrain::{TerrainConfig, TerrainMaterial};
+use crate::terrain::{ErosionPlugin, ErosionQueue, TerrainConfig, TerrainMaterial};
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 use bevy::prelude::*;
 use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
@@ -11,6 +11,7 @@ fn main() {
         .add_plugins(PanOrbitCameraPlugin)
         .add_plugins(MaterialPlugin::<TerrainMaterial>::default())
         .add_plugins((LogDiagnosticsPlugin::default(), FrameTimeDiagnosticsPlugin))
+        .add_plugins(ErosionPlugin)
         .add_systems(Startup, (setup_camera, setup_terrain, setup_lights))
         .run();
 }
@@ -43,6 +44,7 @@ fn setup_terrain(
     mut meshes: ResMut<Assets<Mesh>>,
     mut images: ResMut<Assets<Image>>,
     mut materials: ResMut<Assets<TerrainMaterial>>,
+    mut erosion_queue: ResMut<ErosionQueue>,
 ) {
     let mut config = TerrainConfig {
         size: 512,
@@ -64,4 +66,6 @@ fn setup_terrain(
         transform: Transform::from_xyz(0.0, 0.0, 0.0),
         ..default()
     });
+
+    erosion_queue.0.push(heightmap);
 }

@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy::render::render_resource::{Extent3d, TextureDimension, TextureFormat};
+use bevy::render::render_resource::{Extent3d, TextureDimension, TextureFormat, TextureUsages};
 use noise::utils::{NoiseMapBuilder, PlaneMapBuilder};
 use noise::{Fbm, Perlin};
 
@@ -38,10 +38,10 @@ impl TerrainConfig {
             .set_y_bounds(0.0, self.scale)
             .build()
             .iter()
-            .map(|v| (v * 255.0).floor() as u8)
+            .flat_map(|&f| (f as f32).to_le_bytes())
             .collect();
 
-        Image::new(
+        let mut image = Image::new(
             Extent3d {
                 width: self.size,
                 height: self.size,
@@ -49,7 +49,13 @@ impl TerrainConfig {
             },
             TextureDimension::D2,
             data,
-            TextureFormat::R8Unorm,
-        )
+            TextureFormat::R32Float,
+        );
+
+        image.texture_descriptor.usage = TextureUsages::COPY_DST
+            | TextureUsages::STORAGE_BINDING  // Use in compute shader
+            | TextureUsages::TEXTURE_BINDING; // Rendering
+
+        image
     }
 }
