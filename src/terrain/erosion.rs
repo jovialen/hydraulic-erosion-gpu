@@ -161,6 +161,8 @@ impl bevy::render::render_graph::Node for ErosionNode {
                 .expect("Compute pipeline should be ready");
 
             pass.set_pipeline(erosion_pipeline);
+
+            info!("Dispatching compute erosion shader");
             pass.dispatch_workgroups(512 / 8, 512 / 8, 1);
         }
 

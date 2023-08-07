@@ -32,6 +32,16 @@ fn uv_to_coords(t: texture_2d<f32>, uv: vec2<f32>) -> vec2<u32> {
 }
 
 fn height_at(t: texture_2d<f32>, coords: vec2<u32>) -> f32 {
+    var size = textureDimensions(t, 0);
+    var coords = coords;
+    
+    if coords.x > size.x {
+        coords.x = size.x - 1u;
+    }
+    if coords.y > size.y {
+        coords.y = size.y - 1u;
+    }
+    
     return textureLoad(t, coords, 0).r;
 }
 
@@ -76,10 +86,10 @@ fn vertex(vertex: Vertex) -> MeshVertexOutput {
     var dx = vec2<u32>(1u, 0u);
     var dy = vec2<u32>(0u, 1u);
     
-    var up = textureLoad(terrain_texture, coords + dy, 0).r;
-    var down = textureLoad(terrain_texture, coords - dy, 0).r;
-    var right = textureLoad(terrain_texture, coords + dx, 0).r;
-    var left = textureLoad(terrain_texture, coords - dx, 0).r;
+    var up = height_at(terrain_texture, coords + dy);
+    var down = height_at(terrain_texture, coords - dy);
+    var right = height_at(terrain_texture, coords + dx);
+    var left = height_at(terrain_texture, coords - dx);
 
     var normal = normalize(vec3<f32>(
         left - right,
