@@ -38,7 +38,8 @@ impl TerrainConfig {
             .set_y_bounds(0.0, self.scale)
             .build()
             .iter()
-            .flat_map(|&f| (f as f32).to_le_bytes())
+            .map(|&f| (f + 1.0) / 2.0)
+            .flat_map(|f| (f as f32).to_le_bytes())
             .collect();
 
         let mut image = Image::new(
