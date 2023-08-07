@@ -3,16 +3,29 @@ mod terrain;
 use crate::terrain::{ErosionPlugin, ErosionQueue, TerrainConfig, TerrainMaterial};
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 use bevy::prelude::*;
+use bevy_egui::{egui, EguiContexts, EguiPlugin};
 use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
+
+#[derive(Resource, Default)]
+struct TerrainHeightmapImage(Handle<Image>);
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins)
+        .add_plugins(DefaultPlugins.set(WindowPlugin {
+            primary_window: Some(Window {
+                title: "Hydraulic Erosion".into(),
+                ..default()
+            }),
+            ..default()
+        }))
         .add_plugins(PanOrbitCameraPlugin)
         .add_plugins(MaterialPlugin::<TerrainMaterial>::default())
         .add_plugins((LogDiagnosticsPlugin::default(), FrameTimeDiagnosticsPlugin))
+        .add_plugins(EguiPlugin)
         .add_plugins(ErosionPlugin)
         .add_systems(Startup, (setup_camera, setup_terrain, setup_lights))
+        .add_systems(Update, ui_controls)
+        .init_resource::<TerrainHeightmapImage>()
         .run();
 }
 
@@ -44,7 +57,7 @@ fn setup_terrain(
     mut meshes: ResMut<Assets<Mesh>>,
     mut images: ResMut<Assets<Image>>,
     mut materials: ResMut<Assets<TerrainMaterial>>,
-    mut erosion_queue: ResMut<ErosionQueue>,
+    mut heightmap: ResMut<TerrainHeightmapImage>,
 ) {
     let mut config = TerrainConfig {
         size: 512,
@@ -52,11 +65,11 @@ fn setup_terrain(
         ..default()
     };
 
-    config.noise.frequency = 0.3;
+    config.noise.frequency = 0.2;
 
-    let heightmap = images.add(config.generate_heightmap());
-    let mut material = TerrainMaterial::from(heightmap.clone());
-    material.base_color_texture = Some(heightmap.clone());
+    heightmap.0 = images.add(config.generate_heightmap());
+    let mut material = TerrainMaterial::from(heightmap.0.clone());
+    material.base_color_texture = Some(heightmap.0.clone());
     material.reflectance = 0.1;
     material.perceptual_roughness = 0.9;
 
@@ -66,6 +79,16 @@ fn setup_terrain(
         transform: Transform::from_xyz(0.0, 0.0, 0.0),
         ..default()
     });
+}
 
-    erosion_queue.0.push(heightmap);
+fn ui_controls(
+    mut contexts: EguiContexts,
+    mut erosion_queue: ResMut<ErosionQueue>,
+    heightmap: Res<TerrainHeightmapImage>,
+) {
+    egui::Window::new("Erosion Controls").show(contexts.ctx_mut(), |ui| {
+        if ui.button("Simulate Erosion").clicked() {
+            erosion_queue.0.push(heightmap.0.clone())
+        }
+    });
 }
