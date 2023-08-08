@@ -44,10 +44,9 @@ fn setup_lights(mut commands: Commands) {
         directional_light: DirectionalLight {
             color: Color::WHITE,
             illuminance: 10_000.0,
-            shadows_enabled: false,
             ..default()
         },
-        transform: Transform::from_xyz(500.0, 1000.0, 500.0).looking_at(Vec3::ZERO, Vec3::Y),
+        transform: Transform::from_xyz(25.0, 50.0, 25.0).looking_at(Vec3::ZERO, Vec3::Y),
         ..default()
     });
 }
@@ -64,18 +63,12 @@ fn setup_terrain(
         scale: 10.0,
         ..default()
     };
-
     config.noise.frequency = 0.2;
 
     heightmap.0 = images.add(config.generate_heightmap());
-    let mut material = TerrainMaterial::from(heightmap.0.clone());
-    material.base_color_texture = Some(heightmap.0.clone());
-    material.reflectance = 0.1;
-    material.perceptual_roughness = 0.9;
-
     commands.spawn(MaterialMeshBundle {
         mesh: meshes.add(config.generate_mesh()),
-        material: materials.add(material),
+        material: materials.add(heightmap.0.clone().into()),
         transform: Transform::from_xyz(0.0, 0.0, 0.0),
         ..default()
     });

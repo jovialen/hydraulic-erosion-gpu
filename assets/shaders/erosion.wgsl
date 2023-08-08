@@ -177,7 +177,7 @@ fn erode(@builtin(global_invocation_id) invocation_id: vec3<u32>, @builtin(num_w
 	var EROSION = 0.3;
 	var DEPOSITION = 0.3;
 	var INERTIA = 0.05;
-	var RADIUS = 5;
+	var RADIUS = 3;
 	var CAPACITY = 4.0;
 	var MIN_CAPACITY = 0.01;
 	var DROP_LIFETIME = 50u;
