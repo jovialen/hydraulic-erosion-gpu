@@ -28,6 +28,8 @@ struct Vertex {
 
 fn uv_to_coords(t: texture_2d<f32>, uv: vec2<f32>) -> vec2<u32> {
 	var size = textureDimensions(t, 0);
+    size.x -= 1u;
+    size.y -= 1u;
 	return vec2<u32>(vec2<f32>(size) * uv);
 }
 
